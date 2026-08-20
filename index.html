@@ -1,0 +1,1377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Hakka no Togame</title>
+<meta name="description" content="Hakka no Togame, the white haze punishment. She can hold her body at absolute zero for about four seconds. Reaching it is not the hard part. A scroll-driven story about control, and the climb back.">
+<meta name="theme-color" content="#070912">
+<meta name="color-scheme" content="dark">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cg stroke='%238FE3FF' fill='none' stroke-width='5' stroke-linecap='round'%3E%3Cpath d='M50 12v76M18 31l64 38M18 69l64-38'/%3E%3Cpath d='M50 26l-9-9M50 26l9-9M50 74l-9 9M50 74l9 9'/%3E%3C/g%3E%3C/svg%3E">
+<!-- DEPLOY STEP: patch og:url and og:image with the live absolute URL before zipping -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="Hakka no Togame">
+<meta property="og:description" content="Reaching absolute zero is not the hard part. Coming back is.">
+<meta property="og:url" content="https://hakka-no-togame.sanjay-tech-2808.workers.dev/">
+<meta property="og:image" content="https://hakka-no-togame.sanjay-tech-2808.workers.dev/assets/hero-ending.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<!-- Glyph scoped on purpose. The two Japanese families ship ~120 unicode-range
+     subsets per weight, which is 498 @font-face blocks and 119KB of CSS for a page
+     that renders exactly three kanji. The &text= list below is every printable
+     ASCII character plus the typographic and Japanese ones actually used, which
+     brings that 119KB down to 1.2KB. Add to the list before adding a character
+     outside it (a different kanji, an accent) or it will fall back. -->
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Noto+Serif+JP:wght@700;900&family=Shippori+Mincho:wght@400;600&family=Zen+Kaku+Gothic+New:wght@400;500&display=swap&text=%20!%22%23%24%25%26'()*%2B%2C-.%2F0123456789%3A%3B%3C%3D%3E%3F%40ABCDEFGHIJKLMNOPQRSTUVWXYZ%5B%5C%5D%5E_%60abcdefghijklmnopqrstuvwxyz%7B%7C%7D~%C2%B0%E2%88%92%C2%B7%E2%80%99%E2%80%9C%E2%80%9D%E2%80%A6%E2%80%94%E7%99%BD%E9%9C%9E%E7%BD%B8" rel="stylesheet">
+<style>
+:root{
+  --canvas:#070912; --canvas-deep:#04050B; --panel:#0E1120;
+  --accent:#8FE3FF; --accent-hover:#B8EEFF; --accent-muted:#2C4A5E; --accent-warm:#B49BE8;
+  --text-primary:#EAF2F8; --text-secondary:#93A2B8;
+  --line:#1C2436; --line-strong:#31405C;
+  --display:'Shippori Mincho','Noto Serif JP',Georgia,serif;
+  /* the Bankai name gets its own heavier face: it is the climax and it should
+     not look like the rest of the page */
+  --display-heavy:'Noto Serif JP','Shippori Mincho',Georgia,serif;
+  --body:'Zen Kaku Gothic New','Hiragino Sans',system-ui,sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,'SF Mono',Menlo,monospace;
+  --tshadow:0 1px 2px rgba(4,6,14,.95),0 3px 12px rgba(4,6,14,.80),0 10px 44px rgba(4,6,14,.82);
+  /* reserved column on the left for the gauge; captions start after it */
+  --lane:clamp(7.5rem,14vw,12rem);
+  --ease:cubic-bezier(.22,.61,.36,1);
+  --ease-soft:cubic-bezier(.4,0,.2,1);
+}
+*,*::before,*::after{box-sizing:border-box}
+html,body{overflow-x:hidden;overflow-x:clip}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;background:var(--canvas);color:var(--text-primary);
+  font-family:var(--body);font-weight:400;line-height:1.65;
+  -webkit-font-smoothing:antialiased;
+}
+img{max-width:100%;display:block}
+h1,h2,h3{font-family:var(--display);font-weight:400;line-height:1.12;margin:0;letter-spacing:.005em;
+  text-wrap:balance}
+p{margin:0}
+a{color:inherit}
+::selection{background:var(--accent);color:#04070E}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:2px}
+
+.skip{position:absolute;left:-9999px;top:0;z-index:200;background:var(--accent);color:#04070E;
+  padding:.7rem 1.1rem;font-family:var(--mono);font-size:.78rem;letter-spacing:.08em;border-radius:0 0 6px 0}
+.skip:focus{left:0}
+.vh{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+/* ---------- the fixed environment layer ---------- */
+#env{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;opacity:.9}
+
+/* ---------- nav ---------- */
+.nav{position:fixed;top:0;left:0;right:0;z-index:60;display:flex;align-items:center;
+  justify-content:space-between;gap:1rem;padding:1.05rem clamp(1rem,4vw,2.6rem);
+  background:linear-gradient(180deg,rgba(7,9,18,.82),rgba(7,9,18,0));pointer-events:none}
+.nav>*{pointer-events:auto}
+.brand{display:flex;align-items:center;gap:.62rem;text-decoration:none}
+.brand svg{width:19px;height:19px;color:var(--accent);opacity:.9;flex:none}
+.brand-kanji{font-family:var(--display-heavy);font-weight:700;font-size:1.02rem;
+  letter-spacing:.08em;color:var(--text-primary);line-height:1}
+.brand b{font-family:var(--mono);font-weight:400;font-size:.66rem;letter-spacing:.24em;
+  text-transform:uppercase;color:var(--text-secondary)}
+.nav-cta{font-family:var(--mono);font-size:.7rem;letter-spacing:.16em;text-transform:uppercase;
+  text-decoration:none;color:var(--text-primary);border:1px solid var(--line-strong);
+  padding:.5rem .95rem;border-radius:999px;transition:border-color .4s var(--ease),color .4s var(--ease),background .4s var(--ease)}
+.nav-cta:hover{border-color:var(--accent);color:var(--accent);background:rgba(143,227,255,.06)}
+
+/* ---------- hero ---------- */
+.hero{position:relative;height:1600vh;z-index:1}
+.stage{position:sticky;top:0;height:100vh;height:100svh;overflow:hidden;background:var(--canvas-deep)}
+.poster{position:absolute;inset:0;background-size:cover;background-position:62% 50%;
+  transition:opacity 1.1s var(--ease)}
+#hero{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:62% 50%;
+  opacity:0;transition:opacity .9s var(--ease);will-change:transform;transform:translateZ(0)}
+.stage.video-ready #hero{opacity:1}
+.stage.video-ready .poster{opacity:0}
+.stage.video-failed #hero{display:none}
+.scrim{position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(ellipse 120% 90% at 58% 45%,rgba(6,8,16,0) 30%,rgba(6,8,16,.66) 100%)}
+/* A faint cold wash only. The heavy half-screen wedge this replaced buried the
+   environment; the real legibility work now happens in a small pool right behind
+   the words instead, so the frozen world stays visible. */
+.scrim-cold{position:absolute;inset:0;pointer-events:none;opacity:var(--cold,0);
+  background:linear-gradient(96deg,
+    rgba(3,5,12,.90) 0%,rgba(3,5,12,.84) 27%,rgba(3,5,12,.58) 42%,
+    rgba(3,5,12,.24) 53%,rgba(3,5,12,.06) 60%,rgba(3,5,12,0) 66%)}
+/* No mix-blend-mode. Profiling on an Intel UHD showed the blended version cost
+   ~5.5ms per frame over moving video, taking p95 from 21ms to 35ms, because a
+   blend mode pulls the whole frame off the fast compositing path. Plain alpha
+   at low opacity costs nothing and reads almost the same. */
+.grain{position:absolute;inset:0;pointer-events:none;opacity:.07;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)' opacity='.5'/%3E%3C/svg%3E")}
+
+/* loading ring */
+.ring{position:absolute;left:50%;bottom:5.2rem;transform:translateX(-50%) rotate(-90deg);
+  width:42px;height:42px;color:var(--accent);opacity:.75;z-index:6;transition:opacity .6s var(--ease)}
+.stage.video-ready .ring{opacity:0}
+.cue{position:absolute;left:50%;bottom:5rem;transform:translateX(-50%);z-index:6;
+  color:var(--text-secondary);width:22px;height:34px;opacity:.7}
+
+/* ---------- the gauge, the signature element ----------
+   A straight vertical thermometer down the left edge, running top to bottom.
+   The scale is linear in temperature: +20 at the top, absolute zero at the
+   bottom, so the head's position IS the reading. Before the reveal it carries
+   no numbers at all: a gauge that refuses to explain itself.
+   The head moves by transform, never by `top`, so it never triggers layout. */
+.gauge{position:absolute;left:0;top:0;bottom:0;width:var(--lane);z-index:8;
+  pointer-events:none;font-family:var(--mono);
+  display:flex;align-items:stretch;justify-content:flex-start;
+  padding:clamp(4.6rem,11vh,7rem) 0 clamp(3.4rem,9vh,5.5rem) clamp(1.1rem,2.5vw,2.1rem)}
+.gauge-line{position:relative;width:1px;background:linear-gradient(180deg,
+  rgba(143,227,255,0),rgba(143,227,255,.30) 5%,rgba(143,227,255,.30) 95%,rgba(143,227,255,0))}
+/* the column fills as she cools, so the gauge reads as an instrument rather than
+   a hairline. scaleY from the top, never height, so it never triggers layout */
+.gauge-fill{position:absolute;left:0;top:0;width:1px;height:100%;
+  transform-origin:0 0;transform:scaleY(0);will-change:transform;
+  background:linear-gradient(180deg,rgba(143,227,255,.22),rgba(143,227,255,.95))}
+.gauge-line::before,.gauge-line::after{content:"";position:absolute;left:-4px;width:9px;height:1px;
+  background:rgba(143,227,255,.5)}
+.gauge-line::before{top:0}
+.gauge-line::after{bottom:0}
+/* ticks and their labels */
+.gauge-ticks{position:absolute;inset:0}
+.gauge-ticks i{position:absolute;left:-3px;width:7px;height:1px;background:var(--line-strong)}
+.gauge-ticks b{position:absolute;left:10px;transform:translateY(-50%);
+  font-size:.545rem;font-weight:400;letter-spacing:.12em;color:var(--text-secondary);
+  white-space:nowrap;font-variant-numeric:tabular-nums;
+  opacity:0;transition:opacity .9s var(--ease)}
+.gauge.awake .gauge-ticks b{opacity:.72}
+/* the moving head */
+.gauge-head{position:absolute;left:0;top:0;width:0;height:0;will-change:transform}
+.gauge-head::before{content:"";position:absolute;left:-9px;top:-1px;width:19px;height:2px;
+  background:var(--accent);box-shadow:0 0 12px 1px rgba(143,227,255,.6)}
+.gauge-head::after{content:"";position:absolute;left:-4px;top:-4px;width:8px;height:8px;
+  border-radius:50%;background:var(--accent);box-shadow:0 0 16px 3px rgba(143,227,255,.55)}
+.gauge-read{position:absolute;left:14px;top:0;transform:translateY(-50%);
+  display:flex;align-items:baseline;gap:.14em;white-space:nowrap;
+  opacity:0;transition:opacity .8s var(--ease)}
+.gauge.awake .gauge-read{opacity:1}
+/* The second readout exists only for the flat portrait gauge, where the
+   travelling one would clip at the strip's ends. On desktop the travelling one
+   is the readout, so this copy must stay hidden or the value prints twice. */
+.foot-read{display:none}
+.gauge-num{font-size:clamp(.82rem,1.5vw,1.15rem);font-weight:700;color:var(--text-primary);
+  font-variant-numeric:tabular-nums;letter-spacing:-.02em;
+  text-shadow:0 1px 3px rgba(4,6,14,.98),0 0 14px rgba(4,6,14,.9)}
+.gauge-unit{font-size:.62rem;color:var(--accent);text-shadow:0 1px 3px rgba(4,6,14,.98)}
+/* Sits BELOW the line, not inside it: at absolute zero the head reaches the very
+   bottom, and an in-line footer collided with its own readout. */
+.gauge-foot{position:absolute;left:clamp(1.1rem,2.5vw,2.1rem);bottom:.7rem;
+  width:max-content;max-width:16ch;text-align:left;
+  opacity:0;transition:opacity .9s var(--ease)}
+.gauge.awake .gauge-foot{opacity:1}
+.gauge-label{font-size:.5rem;letter-spacing:.2em;text-transform:uppercase;color:var(--text-secondary);
+  text-shadow:0 1px 3px rgba(4,6,14,.95)}
+.gauge-status{font-size:.5rem;letter-spacing:.2em;text-transform:uppercase;color:var(--accent);
+  min-height:2.6em;line-height:1.6;margin-top:.3rem;text-shadow:0 1px 3px rgba(4,6,14,.95)}
+
+/* ---------- caption bands ---------- */
+.bands{position:absolute;inset:0;z-index:7}
+.band{position:absolute;inset:0;display:grid;align-content:center;
+  padding:6rem clamp(1.1rem,4vw,3rem) 6rem var(--lane);opacity:0;text-shadow:var(--tshadow)}
+/* the caption lane is deliberately narrow: it lets the cold scrim fall off early
+   so more than half the frame stays untouched footage */
+.band-in{max-width:min(38%,540px);position:relative}
+/* A wide, very soft pool of depth around the words. Kept low in peak and long in
+   falloff on purpose: a tighter, darker version reads as a visible smudge sitting
+   on the footage, which is worse than the legibility problem it solves. Most of
+   the work is done by the edge wash and the text shadow. */
+.band-in::before{content:"";position:absolute;inset:-4rem -6rem;z-index:-1;pointer-events:none;
+  opacity:calc((.34 + .66*var(--k,1)) * (.88 + .12*var(--cold,0)));
+  background:radial-gradient(ellipse 100% 100% at 44% 50%,
+    rgba(3,5,12,.62) 0%,rgba(3,5,12,.52) 26%,rgba(3,5,12,.33) 38%,
+    rgba(3,5,12,.13) 46%,rgba(3,5,12,0) 54%)}
+.kicker{font-family:var(--mono);font-size:.6rem;letter-spacing:.3em;text-transform:uppercase;
+  color:var(--accent);margin-bottom:1.15rem;opacity:.95;display:inline-block}
+.line{font-family:var(--display);color:var(--text-primary);
+  font-size:clamp(1.5rem,3.6vw,3.05rem);line-height:1.2;max-width:16ch;text-wrap:balance}
+.line.sm{font-size:clamp(1.2rem,2.5vw,2rem);max-width:18ch}
+.sub{margin-top:1.05rem;color:var(--text-secondary);font-size:clamp(.92rem,1.3vw,1.02rem);max-width:30ch}
+.mega{font-family:var(--display);font-weight:600;line-height:.98;letter-spacing:-.015em;
+  font-size:clamp(2.4rem,7.4vw,6.2rem);display:inline-block}
+.kanji{font-family:var(--display-heavy);font-weight:900;
+  font-size:clamp(2rem,6.4vw,5.2rem);letter-spacing:.07em;
+  color:var(--accent);line-height:1.1;margin-top:.24rem}
+.mega.heavy{font-family:var(--display-heavy);font-weight:900;letter-spacing:-.005em}
+.romaji{font-family:var(--mono);font-size:clamp(.66rem,1.35vw,.92rem);letter-spacing:.42em;
+  text-transform:uppercase;color:#C2D2E2;margin-top:1rem;display:inline-block}
+
+/* the opening title card: the Bankai is named before anything is explained */
+.titlecard .kicker{margin-bottom:.9rem}
+.title-kanji{font-family:var(--display-heavy);font-weight:900;
+  font-size:clamp(2.6rem,7.6vw,6.2rem);letter-spacing:.09em;line-height:1.02;
+  color:var(--text-primary);margin:0}
+.title-romaji{font-family:var(--mono);font-size:clamp(.64rem,1.25vw,.86rem);
+  letter-spacing:.44em;text-transform:uppercase;color:var(--accent);margin-top:1.05rem;display:inline-block}
+.title-rule{height:1px;width:clamp(64px,9vw,132px);margin:1.5rem 0 1.4rem;
+  background:linear-gradient(90deg,var(--accent-muted),transparent)}
+.zero-num{font-family:var(--mono);font-weight:700;font-size:clamp(1.1rem,2.6vw,1.85rem);
+  color:var(--accent);letter-spacing:.02em;margin-top:.9rem;font-variant-numeric:tabular-nums}
+
+/* per-character and per-word entrance primitives */
+.w{display:inline-block;white-space:pre}
+.c{display:inline-block;will-change:transform,opacity}
+.e-scatter .c{--kc:clamp(0,(var(--k,0) - var(--th,0))*2.6,1);opacity:var(--kc);
+  transform:translate(calc((1 - var(--kc))*var(--jx,0px)),calc((1 - var(--kc))*var(--jy,0px)))
+            rotate(calc((1 - var(--kc))*var(--jr,0deg)))}
+.e-grid .c{--kc:clamp(0,(var(--k,0) - var(--th,0))*3.1,1);opacity:var(--kc);
+  transform:translateX(calc((1 - var(--kc))*var(--jx,0px)))}
+.e-weave .c{--kc:clamp(0,(var(--k,0) - var(--th,0))*2.7,1);opacity:var(--kc);
+  transform:translateY(calc((1 - var(--kc))*var(--jy,0px)))}
+.e-drift .w{--kc:clamp(0,(var(--k,0) - var(--th,0))*2.8,1);opacity:var(--kc);
+  transform:translateY(calc((1 - var(--kc))*-26px))}
+.e-rise .w{--kc:clamp(0,(var(--k,0) - var(--th,0))*2.8,1);opacity:var(--kc);
+  transform:translateY(calc((1 - var(--kc))*26px))}
+.e-punch .w{--kc:clamp(0,(var(--k,0) - var(--th,0))*3,1);
+  --ks:clamp(0,(var(--k,0) - var(--th,0) - var(--sd,.1))*var(--ss,3.2),1);
+  opacity:var(--kc);
+  transform:scale(calc(0.6 + (0.4 + var(--ov,.12))*var(--kc) - var(--ov,.12)*var(--ks)))}
+.e-punch .w.em{--ov:.24;--sd:.16;--ss:2.6}
+.e-halves .h1x{--kc:clamp(0,var(--k,0)*2.2,1);display:block;opacity:var(--kc);
+  transform:translateX(calc((1 - var(--kc))*46px))}
+.e-halves .h2x{--kc:clamp(0,(var(--k,0) - .12)*2.2,1);display:block;opacity:var(--kc);
+  transform:translateX(calc((1 - var(--kc))*-46px))}
+.e-depth .line{--kc:clamp(0,var(--k,0)*2.1,1);opacity:var(--kc);
+  transform:scale(calc(.82 + .18*var(--kc)));transform-origin:0 50%}
+/* scope this to the text element: putting position on .band itself would
+   override the band's own position:absolute and drop it out of the stage */
+.e-blur [data-split]{position:relative;display:block}
+.e-blur .soft{position:absolute;inset:0;filter:blur(11px);opacity:calc(1 - clamp(0,var(--k,0)*1.9,1));
+  pointer-events:none}
+.e-blur .sharp{opacity:clamp(0,var(--k,0)*1.9,1)}
+.stagger .sub{opacity:clamp(0,(var(--k,0) - .58)*3.4,1);
+  transform:translateY(calc((1 - clamp(0,(var(--k,0) - .58)*3.4,1))*14px))}
+.stagger .cta-row{opacity:clamp(0,(var(--k,0) - .76)*4.4,1);
+  transform:translateY(calc((1 - clamp(0,(var(--k,0) - .76)*4.4,1))*14px))}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:.55rem;
+  font-family:var(--mono);font-size:.74rem;letter-spacing:.16em;text-transform:uppercase;
+  text-decoration:none;color:#04070E;background:var(--accent);padding:.85rem 1.5rem;border-radius:999px;
+  border:1px solid var(--accent);text-shadow:none;cursor:pointer;
+  transition:background .4s var(--ease),transform .4s var(--ease),box-shadow .4s var(--ease)}
+.btn:hover{background:var(--accent-hover);transform:translateY(-2px);box-shadow:0 10px 30px -12px rgba(143,227,255,.6)}
+.btn.ghost{background:transparent;color:var(--text-primary);border-color:var(--line-strong)}
+.btn.ghost:hover{border-color:var(--accent);color:var(--accent);box-shadow:none}
+.cta-row{display:flex;flex-wrap:wrap;gap:.7rem;margin-top:1.7rem}
+
+/* ---------- static hero (phones, reduced motion) ---------- */
+.static-hero{position:relative;display:none;min-height:100svh;align-items:center;z-index:1;
+  background-size:cover;background-position:64% 50%}
+.static-hero::after{content:"";position:absolute;inset:0;
+  background:linear-gradient(180deg,rgba(6,8,16,.55),rgba(6,8,16,.30) 40%,rgba(7,9,18,.96))}
+.static-in{position:relative;z-index:2;padding:7rem clamp(1.2rem,6vw,3rem) 4.5rem;max-width:640px;
+  text-shadow:var(--tshadow)}
+
+/* ---------- below the fold ---------- */
+main{position:relative;z-index:2}
+.sec{position:relative;padding:clamp(5rem,13vh,9.5rem) clamp(1.2rem,5vw,3rem)}
+.wrap{max-width:1120px;margin:0 auto}
+.eyebrow{font-family:var(--mono);font-size:.6rem;letter-spacing:.3em;text-transform:uppercase;
+  color:var(--accent);margin-bottom:1.4rem;display:flex;align-items:center;gap:.7rem}
+.eyebrow::after{content:"";height:1px;flex:1;max-width:110px;
+  background:linear-gradient(90deg,var(--accent-muted),transparent)}
+/* a centred eyebrow drops the trailing rule, which would otherwise hang off one side */
+.eyebrow.center{justify-content:center}
+.eyebrow.center::after{display:none}
+
+/* premise: one centred number, nothing else competing */
+.premise{text-align:center}
+/* the fade bottoms out at a value that still clears 3:1 on the canvas;
+   --accent-muted measured 2.15:1 and failed */
+.premise .big{font-family:var(--display);font-weight:600;line-height:.92;letter-spacing:-.02em;
+  font-size:clamp(3.4rem,13vw,10.5rem);
+  background:linear-gradient(180deg,var(--text-primary) 30%,#7FA8BE);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  padding-bottom:.06em;margin-bottom:.1em}
+.premise .eyebrow{justify-content:center}
+.premise .eyebrow::after{display:none}
+/* scoped to .lede: a bare `.premise p` also caught the eyebrow and greyed it out */
+.premise .lede{margin:1.6rem auto 0;max-width:52ch;color:var(--text-secondary);font-size:clamp(1rem,1.5vw,1.14rem)}
+.premise .flake{width:40px;height:40px;color:var(--accent-muted);margin:0 auto 2.2rem}
+
+/* ladder: a data skeleton, deliberately unlike its neighbours */
+.ladder{display:grid;gap:0;margin-top:2.6rem;border-top:1px solid var(--line)}
+.rung{display:grid;grid-template-columns:minmax(7.5rem,1fr) 3fr;gap:clamp(1rem,4vw,3rem);
+  align-items:baseline;padding:clamp(1.1rem,2.6vw,1.7rem) 0;border-bottom:1px solid var(--line);
+  position:relative}
+.rung::after{content:"";position:absolute;left:0;bottom:-1px;height:1px;width:0;background:var(--accent);
+  transition:width 1.3s var(--ease)}
+.ladder.in .rung::after{width:var(--fill,20%)}
+.rung dt{font-family:var(--mono);font-weight:700;font-size:clamp(1.05rem,2.4vw,1.7rem);
+  color:var(--text-primary);font-variant-numeric:tabular-nums;letter-spacing:-.01em;margin:0}
+.rung dd{margin:0;color:var(--text-secondary);font-size:clamp(.94rem,1.3vw,1.03rem)}
+.rung:last-child dt{color:var(--accent)}
+
+/* hold: the one interactive moment */
+.hold-wrap{max-width:660px;margin:0 auto;text-align:center}
+.dial{position:relative;width:min(76vw,290px);height:min(76vw,290px);margin:2.8rem auto 1.6rem;
+  display:grid;place-items:center;touch-action:none;-webkit-tap-highlight-color:transparent}
+.dial svg{position:absolute;inset:0;width:100%;height:100%;transform:rotate(-90deg)}
+.dial .trk{stroke:var(--line);stroke-width:2;fill:none}
+.dial .prg{stroke:var(--accent);stroke-width:2;fill:none;stroke-linecap:round;
+  stroke-dasharray:302;stroke-dashoffset:302}
+.dial .hld{stroke:var(--accent-warm);stroke-width:4;fill:none;stroke-linecap:round;
+  stroke-dasharray:283;stroke-dashoffset:283;opacity:0;transition:opacity .4s var(--ease)}
+.dial.zero .hld{opacity:1}
+.dial-btn{position:relative;z-index:2;width:62%;height:62%;border-radius:50%;cursor:pointer;
+  border:1px solid var(--line-strong);background:rgba(14,17,32,.72);color:var(--text-primary);
+  font-family:var(--mono);font-size:.66rem;letter-spacing:.16em;text-transform:uppercase;
+  display:grid;place-items:center;padding:1rem;line-height:1.6;
+  transition:border-color .5s var(--ease),background .5s var(--ease),box-shadow .5s var(--ease)}
+.dial-btn:hover{border-color:var(--accent-muted)}
+.dial.active .dial-btn{border-color:var(--accent);box-shadow:0 0 46px -8px rgba(143,227,255,.5)}
+.dial.fail .dial-btn{border-color:#E4808A;box-shadow:0 0 46px -10px rgba(228,128,138,.45)}
+.dial.done .dial-btn{border-color:var(--accent-warm);box-shadow:0 0 54px -8px rgba(180,155,232,.5)}
+.dial-temp{font-family:var(--mono);font-weight:700;font-size:clamp(1.5rem,4.6vw,2.3rem);
+  color:var(--text-primary);font-variant-numeric:tabular-nums;letter-spacing:-.02em;display:block}
+.dial-unit{font-size:.44em;font-weight:400;color:var(--accent);margin-left:.14em;letter-spacing:.04em}
+.dial-hint{display:block;color:var(--text-secondary);margin-top:.5rem;font-size:.6rem}
+.hold-msg{font-family:var(--mono);font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--accent);min-height:2.4em;margin-top:.4rem}
+.hold-msg.bad{color:#E4808A}
+.hold-msg.good{color:var(--accent-warm)}
+
+/* cost: an asymmetric split, unlike the dial above it */
+.split{display:grid;grid-template-columns:1.05fr .95fr;gap:clamp(1.6rem,5vw,4.4rem);align-items:center}
+.facts{display:grid;gap:1.5rem;margin-top:2.2rem;list-style:none;padding:0}
+.facts li{display:grid;grid-template-columns:auto 1fr;gap:1rem;align-items:start;
+  color:var(--text-secondary);font-size:clamp(.95rem,1.3vw,1.04rem)}
+/* min-width on the label itself, so ch resolves against the mono face it is set
+   in. Each li is its own grid, so without this the three text columns start at
+   three different x positions. */
+.facts b{font-family:var(--mono);font-size:.68rem;letter-spacing:.14em;color:var(--accent);
+  padding-top:.34em;white-space:nowrap;min-width:13ch}
+.shot{position:relative;border-radius:3px;overflow:hidden;border:1px solid var(--line)}
+.shot img{width:100%;height:100%;object-fit:cover;aspect-ratio:4/5}
+.shot::after{content:"";position:absolute;inset:0;
+  background:linear-gradient(200deg,rgba(143,227,255,.07),transparent 55%)}
+
+/* thesis: full bleed, unlike everything above */
+.thesis{position:relative;padding:clamp(7rem,22vh,13rem) clamp(1.2rem,5vw,3rem);
+  background-size:cover;background-position:60% 45%;overflow:hidden}
+.thesis::before{content:"";position:absolute;inset:0;
+  background:linear-gradient(90deg,rgba(6,8,16,.94) 8%,rgba(6,8,16,.72) 46%,rgba(6,8,16,.35))}
+.thesis .wrap{position:relative}
+.thesis h2{font-size:clamp(1.85rem,5.2vw,4rem);max-width:22ch;text-shadow:var(--tshadow)}
+/* break on sentences, never mid-clause */
+.thesis h2 span{display:block}
+.thesis .quiet{color:var(--text-secondary);font-size:.62em;margin-top:.35em}
+
+/* self drawing rules */
+.rule{width:100%;height:1px;border:0;margin:0;background:var(--line);position:relative;overflow:visible}
+.fracture{display:block;width:100%;height:26px;color:var(--accent-muted);opacity:.55}
+.fracture path{stroke:currentColor;stroke-width:1;fill:none;
+  stroke-dasharray:var(--len,600);stroke-dashoffset:var(--len,600);
+  transition:stroke-dashoffset 2.1s var(--ease)}
+.fracture.in path{stroke-dashoffset:0}
+
+/* entrances below the fold */
+.sec .rv{opacity:0;transform:translateY(20px);
+  transition:opacity .95s var(--ease),transform .95s var(--ease)}
+.sec.in .rv{opacity:1;transform:none}
+.sec.in .rv:nth-child(2){transition-delay:.09s}
+.sec.in .rv:nth-child(3){transition-delay:.18s}
+.sec.in .rv:nth-child(4){transition-delay:.27s}
+.sec.done .rv,.sec.done .rv:nth-child(2),.sec.done .rv:nth-child(3),.sec.done .rv:nth-child(4){transition-delay:0s!important}
+
+/* one living element per section, paused when off screen or tab hidden */
+.pulse{position:relative}
+.pulse::after{content:"";position:absolute;inset:-30% -12%;border-radius:50%;pointer-events:none;
+  background:radial-gradient(circle,rgba(143,227,255,.16),transparent 66%);opacity:0}
+.sec.in .pulse::after{animation:breathe 7.5s var(--ease-soft) -2.4s infinite}
+@keyframes breathe{0%,100%{opacity:.16}50%{opacity:.5}}
+body.paused *,body.paused *::before,body.paused *::after{animation-play-state:paused!important}
+
+footer{position:relative;z-index:2;border-top:1px solid var(--line);
+  padding:3.4rem clamp(1.2rem,5vw,3rem);color:var(--text-secondary);font-size:.83rem}
+footer .wrap{display:grid;gap:1.4rem}
+footer p{max-width:74ch}
+.credit{display:flex;flex-wrap:wrap;align-items:center;gap:.8rem 1.4rem;
+  padding-bottom:1.3rem;border-bottom:1px solid var(--line)}
+.credit .by{font-size:.95rem;color:var(--text-secondary);margin:0}
+.credit .by strong{font-family:var(--display);font-weight:600;font-size:1.16rem;
+  color:var(--text-primary);letter-spacing:.01em}
+.gh{display:inline-flex;align-items:center;gap:.5rem;text-decoration:none;
+  font-family:var(--mono);font-size:.66rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--text-secondary);border:1px solid var(--line-strong);
+  padding:.48rem .9rem;border-radius:999px;
+  transition:color .4s var(--ease),border-color .4s var(--ease),background .4s var(--ease)}
+.gh svg{width:14px;height:14px;flex:none}
+.gh:hover{color:var(--accent);border-color:var(--accent);background:rgba(143,227,255,.06)}
+
+/* ---------- responsive ---------- */
+@media (max-width:1000px){
+  .split{grid-template-columns:1fr}
+  .shot img{aspect-ratio:16/10}
+  .band-in{max-width:74%}
+  .rung{grid-template-columns:minmax(6rem,auto) 1fr}
+}
+@media (max-height:620px){.cue,.ring,.gauge-foot{display:none}}
+/* a shallow window has no room for the scale labels either */
+@media (max-height:540px){.gauge-ticks b{display:none}}
+@media (max-width:560px){
+  .nav{padding:.8rem 1rem}
+  .nav-cta{font-size:.6rem;letter-spacing:.1em;padding:.4rem .8rem}
+  .brand b{font-size:.6rem;letter-spacing:.18em}
+  .brand svg{width:16px;height:16px}
+}
+
+/* the static-hero gates, matched character for character in JS */
+@media (orientation: landscape) and (pointer: coarse) and (max-height: 560px),
+       (prefers-reduced-motion: reduce){
+  .hero{display:none}
+  .static-hero{display:flex}
+}
+@media (pointer:coarse){
+  .btn{min-height:44px;display:inline-flex;align-items:center;justify-content:center}
+  .nav-cta{min-height:44px;display:inline-flex;align-items:center;justify-content:center}
+}
+
+/* ---------- PORTRAIT: film band on top, captions below ----------
+   A 16:9 film cover-cropped into a 9:19.5 screen shows about a quarter of the
+   picture width, which destroys the wide shots. So on portrait the film becomes
+   a full-width band and the captions move underneath it onto the canvas. That
+   also means no text ever sits over footage here, so the scrims switch off and
+   the type is cleaner than it is on desktop. */
+@media (orientation:portrait) and (max-width:900px){
+  :root{
+    --film-top:clamp(3.9rem,10.5vh,5.6rem);
+    --film-h:calc(100vw * 0.5569);          /* the film's true ratio, so cover crops nothing */
+    --gauge-h:5.4rem;
+    --content-top:calc(var(--film-top) + var(--film-h) + var(--gauge-h));
+  }
+  #hero,.poster{top:var(--film-top);height:var(--film-h);bottom:auto;object-position:50% 50%}
+  .poster{background-position:50% 50%}
+  .scrim,.grain{top:var(--film-top);height:var(--film-h);bottom:auto}
+  .scrim{background:radial-gradient(ellipse 120% 100% at 50% 50%,rgba(6,8,16,0) 46%,rgba(6,8,16,.5) 100%)}
+  .scrim-cold{display:none}
+  .ring{top:calc(var(--film-top) + var(--film-h)/2);bottom:auto;transform:translate(-50%,-50%) rotate(-90deg)}
+  .cue{bottom:1.6rem}
+
+  /* captions live under the film, on the canvas, so they need no pool at all.
+     Centred in the space that is left, not top aligned, or short beats leave a
+     large dead gap under them. */
+  .band{align-content:center;padding:var(--content-top) 1.35rem 1.6rem}
+  .band-in{max-width:100%}
+  .band-in::before{display:none}
+  .line{font-size:clamp(1.45rem,7.4vw,2.3rem);max-width:19ch}
+  .line.sm{font-size:clamp(1.25rem,6.2vw,1.9rem);max-width:21ch}
+  .sub{max-width:34ch;font-size:.98rem}
+  .mega{font-size:clamp(2.3rem,12.5vw,3.4rem)}
+  .kanji{font-size:clamp(1.9rem,11vw,3rem)}
+  .title-kanji{font-size:clamp(2.2rem,13vw,3.6rem)}
+
+  /* the gauge lies flat between the film and the words */
+  .gauge{left:0;right:0;top:calc(var(--film-top) + var(--film-h));bottom:auto;
+    width:auto;height:var(--gauge-h);flex-direction:column;align-items:stretch;
+    justify-content:flex-start;padding:2.6rem 1.35rem 0}
+  .gauge-line{width:100%;height:1px;background:linear-gradient(90deg,
+    rgba(143,227,255,0),rgba(143,227,255,.30) 4%,rgba(143,227,255,.30) 96%,rgba(143,227,255,0))}
+  .gauge-fill{width:100%;height:1px;transform-origin:0 0;transform:scaleX(0);
+    background:linear-gradient(90deg,rgba(143,227,255,.22),rgba(143,227,255,.95))}
+  .gauge-line::before,.gauge-line::after{top:-4px;width:1px;height:9px;left:auto}
+  .gauge-line::before{left:0}
+  .gauge-line::after{right:0}
+  .gauge-ticks i{left:var(--pos);top:-3px;width:1px;height:7px}
+  /* a 347px strip cannot carry six labels: 20 and 0 collide and −273.15 runs off
+     the end. Three, with the outer two aligned inward so nothing overflows. */
+  /* 15px clears the head's glow, which otherwise sits on the 20 degree label at
+     exactly the moment the scale is revealed */
+  .gauge-ticks b{left:var(--pos);top:15px;transform:translateX(-50%);
+    font-size:.5rem;letter-spacing:.04em;display:none}
+  .gauge-ticks b:nth-of-type(1),
+  .gauge-ticks b:nth-of-type(4),
+  .gauge-ticks b:nth-of-type(6){display:block}
+  .gauge-ticks b:nth-of-type(1){transform:translateX(0)}
+  .gauge-ticks b:nth-of-type(6){transform:translateX(-100%)}
+  .gauge-head{left:0;top:0}
+  .gauge-head::before{left:-1px;top:-7px;width:2px;height:15px}
+  .gauge-head::after{left:-4px;top:-4px}
+  .gauge-head .gauge-read{display:none}          /* would clip at the strip's ends */
+  /* Sits above the line, clear of the scale labels below it. `width:auto` is
+     load bearing: the desktop rule sets width:max-content, which collapsed this
+     row and forced the longest status onto three wrapped lines straight through
+     the scale. Spanning the strip gives the status the room it needs. */
+  .gauge-foot{left:1.35rem;right:1.35rem;top:.35rem;bottom:auto;
+    width:auto;max-width:none;
+    display:flex;align-items:baseline;justify-content:space-between;gap:.8rem}
+  /* it shares the .gauge-read class, so it inherits that rule's absolute
+     positioning and translateY(-50%). Put it back in flow or it floats up onto
+     the film instead of sitting in the row. */
+  .foot-read{display:flex;position:static;transform:none;left:auto;top:auto}
+  .gauge-label{display:none}
+  /* one line, always. "Cellular activity resuming" is 26 characters and must not
+     wrap here, or it grows downward into the scale. */
+  .gauge-status{min-height:0;margin-top:0;max-width:none;text-align:right;
+    white-space:nowrap;min-width:0;flex:0 1 auto;overflow:hidden;text-overflow:ellipsis}
+}
+@media (orientation:portrait) and (max-width:900px) and (max-height:700px){
+  :root{--film-top:clamp(3.4rem,8vh,4.6rem);--gauge-h:4.8rem}
+  .gauge-ticks b{display:none}
+}
+
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important;transition-delay:0s!important}
+  .sec .rv{opacity:1;transform:none}
+  .fracture path{stroke-dashoffset:0}
+  .ladder .rung::after{width:var(--fill,20%)}
+  #env{display:none}
+}
+</style>
+</head>
+<body>
+<canvas id="env" aria-hidden="true"></canvas>
+<a class="skip" href="#main">Skip to content</a>
+
+<nav class="nav">
+  <a class="brand" href="#main">
+    <svg viewBox="0 0 100 100" aria-hidden="true"><g stroke="currentColor" fill="none" stroke-width="5" stroke-linecap="round"><path d="M50 12v76M18 31l64 38M18 69l64-38"/><path d="M50 26l-9-9M50 26l9-9M50 74l-9 9M50 74l9 9"/></g></svg>
+    <span class="brand-kanji" lang="ja">白霞罸</span>
+    <b>Hakka no Togame</b>
+  </a>
+  <a class="nav-cta" href="#hold">Hold it yourself</a>
+</nav>
+
+<main id="main" tabindex="-1">
+
+  <!-- static hero: phones, portrait tablets, reduced motion -->
+  <header class="static-hero" id="statichero">
+    <div class="static-in titlecard">
+      <p class="kicker">Bankai</p>
+      <h1 class="title-kanji" lang="ja">白霞罸</h1>
+      <p class="title-romaji">Hakka no Togame</p>
+      <p class="title-rule" aria-hidden="true"></p>
+      <p class="line sm">She reached absolute zero.</p>
+      <p class="sub">The hard part was coming back.</p>
+      <div class="cta-row"><a class="btn" href="#hold">Hold it yourself</a></div>
+    </div>
+  </header>
+
+  <!-- the scroll journey -->
+  <section class="hero" id="journey" aria-label="The descent and the return">
+    <div class="stage" id="stage">
+      <div class="poster" id="poster" aria-hidden="true"></div>
+      <video id="hero" preload="none" muted playsinline aria-hidden="true" tabindex="-1"></video>
+      <div class="scrim" aria-hidden="true"></div>
+      <div class="scrim-cold" id="scrimcold" aria-hidden="true"></div>
+      <div class="grain" aria-hidden="true"></div>
+
+      <svg class="ring" id="ring" viewBox="0 0 48 48" aria-hidden="true">
+        <circle cx="24" cy="24" r="20" fill="none" stroke="currentColor" stroke-width="3"
+                stroke-dasharray="126" style="stroke-dashoffset:var(--ld,126)"/>
+      </svg>
+
+      <div class="gauge" id="gauge" aria-hidden="true">
+        <div class="gauge-line">
+          <div class="gauge-fill" id="gaugefill"></div>
+          <div class="gauge-ticks" id="gaugeticks"></div>
+          <div class="gauge-head" id="gaugehead">
+            <div class="gauge-read">
+              <span class="gauge-num" data-temp>20</span><span class="gauge-unit">&deg;C</span>
+            </div>
+          </div>
+        </div>
+        <div class="gauge-foot">
+          <div class="gauge-read foot-read">
+            <span class="gauge-num" data-temp>20</span><span class="gauge-unit">&deg;C</span>
+          </div>
+          <div class="gauge-label">Body temperature</div>
+          <div class="gauge-status" id="railstatus"></div>
+        </div>
+      </div>
+
+      <div class="bands" id="bands">
+
+        <div class="band e-blur" data-band="0,0.085" data-ramp="0.03">
+          <div class="band-in titlecard">
+            <p class="kicker">Bankai</p>
+            <h1 class="title-kanji" lang="ja">白霞罸</h1>
+            <p class="title-romaji">Hakka no Togame</p>
+            <p class="title-rule" aria-hidden="true"></p>
+            <p class="line sm" data-split="word">The wind stopped first.</p>
+          </div>
+        </div>
+
+        <div class="band e-drift" data-band="0.091,0.176">
+          <div class="band-in">
+            <p class="line sm" data-split="word">Then the mist forgot how to move.</p>
+          </div>
+        </div>
+
+        <div class="band e-scatter" data-band="0.182,0.267" data-spread="0.5">
+          <div class="band-in">
+            <p class="line sm" data-split="char">Frost found her hands before she called for it.</p>
+          </div>
+        </div>
+
+        <div class="band e-punch" data-band="0.273,0.358">
+          <div class="band-in">
+            <p class="line sm" data-split="word" data-em="froze">The blood froze before it could fall.</p>
+          </div>
+        </div>
+
+        <div class="band e-weave" data-band="0.364,0.449" data-spread="0.62">
+          <div class="band-in">
+            <p class="line sm" data-split="char">Strand by strand, the colour left her.</p>
+          </div>
+        </div>
+
+        <div class="band e-grid" data-band="0.455,0.54" data-ramp="0.036" data-spread="0.55">
+          <div class="band-in">
+            <p class="kicker">Reading resumed</p>
+            <p class="line" data-split="char">This was never magic.</p>
+            <p class="sub">It was temperature.</p>
+          </div>
+        </div>
+
+        <div class="band e-depth" data-band="0.546,0.631">
+          <div class="band-in">
+            <p class="line sm">Every degree comes out of her own body.</p>
+          </div>
+        </div>
+
+        <div class="band e-halves" data-band="0.637,0.722">
+          <div class="band-in">
+            <p class="mega"><span class="h1x">Absolute</span><span class="h2x">Zero</span></p>
+            <p class="zero-num">&minus;273.15&deg;C</p>
+          </div>
+        </div>
+
+        <div class="band e-punch" data-band="0.728,0.813" data-ramp="0.03">
+          <div class="band-in">
+            <p class="mega heavy" data-split="word" data-em="Bankai">Bankai</p>
+            <p class="kanji" lang="ja">白霞罸</p>
+            <p class="romaji">Hakka no Togame</p>
+          </div>
+        </div>
+
+        <div class="band e-rise" data-band="0.819,0.904">
+          <div class="band-in">
+            <p class="line sm" data-split="word">She held it for four seconds.</p>
+            <p class="sub">Now she has to come back.</p>
+          </div>
+        </div>
+
+        <div class="band e-rise stagger" data-band="0.91,1" data-ramp="0.04">
+          <div class="band-in">
+            <p class="line" data-split="word">Power is not reaching absolute zero.</p>
+            <p class="sub">It is returning from it.</p>
+            <div class="cta-row"><a class="btn" href="#hold">Hold it yourself</a></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- premise -->
+  <section class="sec premise" id="premise">
+    <div class="wrap">
+      <svg class="flake rv pulse" viewBox="0 0 100 100" aria-hidden="true"><g stroke="currentColor" fill="none" stroke-width="3" stroke-linecap="round"><path d="M50 8v84M14 29l72 42M14 71l72-42"/><path d="M50 24l-10-10M50 24l10-10M50 76l-10 10M50 76l10 10"/><path d="M29 41l-14-3M29 41l-3-14M71 59l14 3M71 59l3 14M71 41l14-3M71 41l3-14M29 59l-14 3M29 59l-3 14"/></g></svg>
+      <p class="eyebrow rv">The whole story, in one number</p>
+      <p class="big rv">Four seconds</p>
+      <p class="lede rv">Minus 273.15 degrees is the coldest anything can be. Molecules stop. She can hold her own body there for about four seconds. Long enough to end a fight. Long enough to end her.</p>
+    </div>
+  </section>
+
+  <!-- ladder -->
+  <section class="sec" id="ladder">
+    <div class="wrap">
+      <p class="eyebrow rv">The descent</p>
+      <h2 class="rv" style="font-size:clamp(1.6rem,4vw,2.8rem);max-width:17ch">What the world does on the way down.</h2>
+      <dl class="ladder rv" id="ladderlist">
+        <div class="rung" style="--fill:14%"><dt>0&deg;C</dt><dd>Frost spreads outward from her feet. The air thickens and stops carrying sound cleanly.</dd></div>
+        <div class="rung" style="--fill:26%"><dt>&minus;18&deg;C</dt><dd>Ice grows fast enough to see. Frozen veins surface under her skin.</dd></div>
+        <div class="rung" style="--fill:42%"><dt>&minus;50&deg;C</dt><dd>The ground fractures. Shockwaves of cold travel out through the stone.</dd></div>
+        <div class="rung" style="--fill:62%"><dt>&minus;100&deg;C</dt><dd>Sound nearly disappears. Everything still moving slows down.</dd></div>
+        <div class="rung" style="--fill:82%"><dt>&minus;200&deg;C</dt><dd>The atmosphere itself crystallises. The air holds its shape.</dd></div>
+        <div class="rung" style="--fill:100%"><dt>&minus;273.15&deg;C</dt><dd>Molecular motion reaches zero. Nothing in the world moves, including her.</dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <!-- the one interactive moment, and the call to action -->
+  <section class="sec" id="hold">
+    <div class="wrap hold-wrap">
+      <p class="eyebrow center rv">Your turn</p>
+      <h2 class="rv" style="font-size:clamp(1.7rem,4.4vw,3rem)">Going down is one long press. Coming back is not.</h2>
+      <p class="rv" style="color:var(--text-secondary);max-width:48ch;margin:1.2rem auto 0">Hold to fall to absolute zero. Stay there four seconds. Then bring yourself back up. Letting go rises too fast, pressing pushes you back down, and holding on gets you nowhere. Take at least four seconds.</p>
+
+      <div class="dial rv" id="dial">
+        <svg viewBox="0 0 100 100" aria-hidden="true">
+          <circle class="trk" cx="50" cy="50" r="48"/>
+          <circle class="prg" id="dialprg" cx="50" cy="50" r="48"/>
+          <circle class="hld" id="dialhld" cx="50" cy="50" r="45"/>
+        </svg>
+        <button class="dial-btn" id="dialbtn" aria-describedby="holdmsg">
+          <span>
+            <span class="dial-temp"><span id="dialtemp">20</span><span class="dial-unit">&deg;C</span></span>
+            <span class="dial-hint" id="dialhint">Press and hold</span>
+          </span>
+        </button>
+      </div>
+      <p class="hold-msg" id="holdmsg" role="status"></p>
+    </div>
+  </section>
+
+  <hr class="rule">
+  <svg class="fracture" id="fracture" viewBox="0 0 1200 26" preserveAspectRatio="none" aria-hidden="true">
+    <path d="M0 13 L180 13 L214 4 L268 21 L322 9 L402 13 L640 13 L678 22 L722 5 L768 17 L820 13 L1200 13"/>
+  </svg>
+
+  <!-- cost -->
+  <section class="sec" id="cost">
+    <div class="wrap split">
+      <div>
+        <p class="eyebrow rv">What it costs her</p>
+        <h2 class="rv" style="font-size:clamp(1.6rem,4vw,2.8rem);max-width:14ch">The power is not free, and it never was.</h2>
+        <ul class="facts rv">
+          <li><b>Four seconds</b><span>The ceiling. Past it, the cold stops being something she is doing and starts being something happening to her.</span></li>
+          <li><b>The hand</b><span>Her blade hand cracks. The damage is real, and it stays after the ice is gone.</span></li>
+          <li><b>The climb</b><span>Raise the temperature too quickly and the harm is permanent. There is no fast way out.</span></li>
+        </ul>
+      </div>
+      <figure class="shot rv" style="margin:0">
+        <img id="costimg" alt="Frost crystallising along a pale hand gripping a white blade." loading="lazy" decoding="async">
+      </figure>
+    </div>
+  </section>
+
+  <!-- thesis -->
+  <section class="sec thesis" id="thesis">
+    <div class="wrap">
+      <p class="eyebrow rv">The point</p>
+      <h2 class="rv"><span>Falling is release.</span><span>Climbing is control.</span><span class="quiet">Anyone can let go.</span></h2>
+      <div class="cta-row rv"><a class="btn" href="#hold">Try the four seconds</a></div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="credit">
+      <p class="by">Designed and built by <strong>Sanjay R</strong></p>
+      <a class="gh" href="https://github.com/Sanjay-AI-ML" target="_blank" rel="noopener noreferrer">
+        <svg viewBox="0 0 16 16" aria-hidden="true"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/></svg>
+        <span>GitHub</span>
+      </a>
+    </div>
+    <p>A non commercial fan tribute to a scene from Bleach: Thousand-Year Blood War, made for the story in it. Not affiliated with, endorsed by, or connected to Tite Kubo, Shueisha, Studio Pierrot, or any rights holder. All characters and names belong to their owners.</p>
+  </div>
+</footer>
+
+<script type="module">
+/* ============================================================
+   FOUR SECONDS
+   Scroll-scrubbed hero, temperature engine, environment layer.
+   ============================================================ */
+
+const $  = s => document.querySelector(s);
+const clamp = (v,lo,hi) => Math.min(hi, Math.max(lo, v));
+const smoothstep = (p,e0,e1) => { const t = clamp((p-e0)/(e1-e0),0,1); return t*t*(3-2*t); };
+
+/* phones download a 4.2MB cut instead of the 10.5MB master: at this size the
+   extra resolution is not resolvable anyway, and it is mobile data. */
+const FILM = {
+  desktop: { url: 'assets/hero-scrub.mp4',   bytes: 10504064 },
+  phone:   { url: 'assets/hero-scrub-m.mp4', bytes: 4395853 }
+};
+const pickFilm = () => matchMedia('(max-width: 900px)').matches ? FILM.phone : FILM.desktop;
+const POSTER_URL  = 'assets/hero-poster.jpg';
+const ENDING_URL  = 'assets/hero-ending.jpg';
+
+
+const stage  = $('#stage');
+const video  = $('#hero');
+const ring   = $('#ring');
+const poster = $('#poster');
+const gaugeEl = $('#gauge');
+const gaugeLine = gaugeEl.querySelector('.gauge-line');
+const gaugeHead = $('#gaugehead');
+const gaugeFill = $('#gaugefill');
+const railNums = [...document.querySelectorAll('[data-temp]')];
+/* portrait lays the gauge flat, so the head travels on X instead of Y */
+const FLAT = matchMedia('(orientation: portrait) and (max-width: 900px)');
+const railStatus = $('#railstatus');
+const heroSec = $('#journey');
+
+/* ---------- reusable design assets that need no extra request ---------- */
+$('#statichero').style.backgroundImage = `url('${ENDING_URL}')`;
+$('#thesis').style.backgroundImage     = `url('${ENDING_URL}')`;
+$('#costimg').src = 'assets/cost.jpg';
+$('#costimg').addEventListener('error', () => $('#costimg').closest('figure').remove());
+
+/* ---------- gauge scale, drawn once ----------
+   Linear in temperature so the head's height is literally the reading. */
+const T_TOP = 20, T_FOOT = -273.15;
+/* The top slice of the line carries no scale at all. The head crosses it during
+   the mystery, and lands exactly on the 20 degree tick at the moment the reveal
+   happens, so the motion is continuous and nothing ever jumps. */
+const GAUGE_HEAD_ZONE = 24;
+const tempToPct = t =>
+  GAUGE_HEAD_ZONE + clamp((T_TOP - t) / (T_TOP - T_FOOT), 0, 1) * (100 - GAUGE_HEAD_ZONE);
+(() => {
+  const marks = [20, 0, -18, -50, -100, -150, -200, -250, -273.15];
+  const labelled = new Set([20, 0, -50, -100, -200, -273.15]);
+  let html = '';
+  for (const m of marks) {
+    const y = tempToPct(m).toFixed(3);
+    const major = labelled.has(m);
+    html += `<i style="--pos:${y}%;top:${y}%;width:${major ? 9 : 5}px;left:${major ? -4 : -2}px"></i>`;
+    if (major) html += `<b style="--pos:${y}%;top:${y}%">${String(m).replace('-', '−')}&deg;</b>`;
+  }
+  $('#gaugeticks').innerHTML = html;
+})();
+
+/* ============================================================
+   1. TEXT SPLITTING (once, at load, seeded so it never varies)
+   ============================================================ */
+function rng(seed){ let s = seed>>>0; return () => (s = (s*1664525 + 1013904223)>>>0) / 4294967296; }
+
+function splitAll(){
+  document.querySelectorAll('[data-split]').forEach((el, idx) => {
+    const mode = el.dataset.split;
+    const text = el.textContent.trim();
+    const band = el.closest('.band');
+    const spread = parseFloat(band?.dataset.spread ?? '0.5');
+    const emWord = el.dataset.em || null;
+    const r = rng(9301 + idx*7919);
+
+    const words = text.split(/(\s+)/).filter(w => w.length);
+    const wrapEl = document.createElement('span');
+    wrapEl.setAttribute('aria-hidden','true');
+
+    let charIndex = 0;
+    const totalChars = text.replace(/\s/g,'').length || 1;
+    const realWords = words.filter(w => !/^\s+$/.test(w));
+
+    words.forEach(word => {
+      if (/^\s+$/.test(word)) { wrapEl.appendChild(document.createTextNode(word)); return; }
+      const w = document.createElement('span');
+      w.className = 'w';
+      if (emWord && word.replace(/[^\w]/g,'').toLowerCase() === emWord.toLowerCase()) w.classList.add('em');
+
+      if (mode === 'char') {
+        for (const ch of word) {
+          const c = document.createElement('span');
+          c.className = 'c';
+          c.textContent = ch;
+          if (el.closest('.e-grid')) {
+            c.style.setProperty('--th', (charIndex/totalChars*spread + r()*0.06).toFixed(3));
+            c.style.setProperty('--jx', (-26 - r()*30).toFixed(0) + 'px');
+          } else if (el.closest('.e-weave')) {
+            c.style.setProperty('--th', (charIndex/totalChars*spread + r()*0.08).toFixed(3));
+            c.style.setProperty('--jy', ((charIndex % 2 ? 1 : -1) * (16 + r()*20)).toFixed(0) + 'px');
+          } else {
+            c.style.setProperty('--th', (r()*0.55).toFixed(3));
+            c.style.setProperty('--jx', ((r()*2-1)*34).toFixed(0) + 'px');
+            c.style.setProperty('--jy', ((r()*2-1)*30).toFixed(0) + 'px');
+            c.style.setProperty('--jr', ((r()*2-1)*16).toFixed(0) + 'deg');
+          }
+          charIndex++;
+          w.appendChild(c);
+        }
+      } else {
+        w.textContent = word;
+        const wi = realWords.indexOf(word);
+        w.style.setProperty('--th', (clamp(wi,0,99)/Math.max(realWords.length,1)*spread + r()*0.04).toFixed(3));
+      }
+      wrapEl.appendChild(w);
+    });
+
+    const sr = document.createElement('span');
+    sr.className = 'vh';
+    sr.textContent = text;
+    el.textContent = '';
+    el.append(sr, wrapEl);
+  });
+
+  /* blur-to-sharp needs two stacked copies, built from the split result */
+  document.querySelectorAll('.e-blur [data-split]').forEach(el => {
+    const visual = el.querySelector('[aria-hidden="true"]');
+    if (!visual) return;
+    const soft = visual.cloneNode(true);
+    soft.className = 'soft';
+    visual.className = 'sharp';
+    el.insertBefore(soft, visual);
+  });
+}
+splitAll();
+
+/* ============================================================
+   2. BANDS
+   ============================================================ */
+const bands = [...document.querySelectorAll('.band')].map(el => {
+  const [a,b] = el.dataset.band.split(',').map(Number);
+  return {
+    el, a, b,
+    ramp: el.dataset.ramp ? parseFloat(el.dataset.ramp) : null,
+    op: -1, k: -1
+  };
+});
+const FIRST = 0, LAST = bands.length - 1;
+
+let loadK = 0, loadStart = 0;
+
+function updateBands(p){
+  for (let i = 0; i < bands.length; i++){
+    const B = bands[i];
+    const f = Math.min(0.02, (B.b - B.a) / 3);
+    const inA  = i === FIRST ? 1 : smoothstep(p, B.a, B.a + f);
+    const outA = i === LAST  ? 1 : (1 - smoothstep(p, B.b - f, B.b));
+    let op = inA * outA;
+
+    const ramp = B.ramp || Math.min(0.025, (B.b - B.a) * 0.35);
+    let k = clamp((p - B.a) / ramp, 0, 1);
+    if (i === FIRST) k = Math.max(k, loadK);
+
+    if (Math.abs(op - B.op) > 0.004){ B.el.style.opacity = op.toFixed(3); B.op = op; }
+    if (Math.abs(k - B.k) > 0.008){ B.el.style.setProperty('--k', k.toFixed(3)); B.k = k; }
+  }
+}
+
+/* ============================================================
+   3. THE TEMPERATURE ENGINE
+   ============================================================ */
+const T_START = 20, T_ZERO = -273.15;
+const P_WAKE = 0.455, P_FALL = 0.508, P_BOTTOM = 0.68, P_HOLD_END = 0.80;
+
+/* Displayed temperature. Falling accelerates, because letting go gets easier.
+   Climbing is deliberately back loaded, so the first degrees back cost the most scroll. */
+function tempAt(p){
+  if (p < P_WAKE) return null;
+  /* the number rests on a normal 20 while the reveal beat lands, so the reader
+     sees an ordinary body temperature before they watch it fall */
+  if (p < P_FALL) return T_START;
+  if (p < P_BOTTOM){
+    const u = (p - P_FALL) / (P_BOTTOM - P_FALL);
+    return T_START + (T_ZERO - T_START) * Math.pow(u, 1.55);
+  }
+  if (p < P_HOLD_END) return T_ZERO;
+  const u = (p - P_HOLD_END) / (1 - P_HOLD_END);
+  return T_ZERO + (T_START - T_ZERO) * Math.pow(u, 2.0);
+}
+
+/* The world cools from the very first scroll, long before anything is explained. */
+function envTempAt(p){
+  if (p < P_WAKE)     return smoothstep(p, 0, P_WAKE) * 0.30;
+  if (p < P_BOTTOM)   return 0.30 + smoothstep(p, P_WAKE, P_BOTTOM) * 0.70;
+  if (p < P_HOLD_END) return 1;
+  return 1 - smoothstep(p, P_HOLD_END, 1) * 0.94;
+}
+
+/* How white the FOOTAGE is, which is not the same curve as the story temperature:
+   the world visibly burns out well before the readout admits how cold it is.
+   This drives the caption lane's compensating scrim. */
+function coldAt(p){
+  if (p < 0.22) return 0;
+  if (p < 0.42) return smoothstep(p, 0.22, 0.42);
+  if (p < 0.86) return 1;
+  return 1 - smoothstep(p, 0.86, 1);
+}
+
+function statusAt(p){
+  if (p <= P_HOLD_END) return '';
+  const u = (p - P_HOLD_END) / (1 - P_HOLD_END);
+  if (u < 0.16) return 'Returning';
+  if (u < 0.42) return 'Stabilising';
+  if (u < 0.72) return 'Cellular activity resuming';
+  return 'Motion recovery';
+}
+
+let lastNum = '', lastNumAt = 0, lastStatus = '', railAwake = false, lastMark = -1;
+
+/* `force` is passed on the frame the drive loop converges. Without it the 90ms
+   throttle can swallow the terminal write and the readout rests on a stale number. */
+function updateRail(p, now, force){
+  const t = tempAt(p);
+
+  if ((t !== null) !== railAwake){
+    railAwake = t !== null;
+    gaugeEl.classList.toggle('awake', railAwake);
+  }
+
+  /* Before the reveal the head still descends, it just carries no number:
+     the scale is withheld, not the motion. */
+  const pct = t === null
+    ? smoothstep(p, 0, P_WAKE) * GAUGE_HEAD_ZONE
+    : tempToPct(t);
+  if (force || Math.abs(pct - lastMark) > 0.08){
+    /* translate and scale, never `top`/`height`: both would relayout every frame */
+    if (FLAT.matches){
+      gaugeHead.style.transform = `translateX(${(gaugeLine.clientWidth * pct / 100).toFixed(1)}px)`;
+      gaugeFill.style.transform = `scaleX(${(pct / 100).toFixed(4)})`;
+    } else {
+      gaugeHead.style.transform = `translateY(${(gaugeLine.clientHeight * pct / 100).toFixed(1)}px)`;
+      gaugeFill.style.transform = `scaleY(${(pct / 100).toFixed(4)})`;
+    }
+    lastMark = pct;
+  }
+
+  if (t !== null && (force || now - lastNumAt > 90)){
+    const s = (Math.abs(t) >= 100 || t <= T_ZERO + 0.01) ? t.toFixed(2) : t.toFixed(1);
+    const str = s.replace('-', '−');
+    if (str !== lastNum){ for (const el of railNums) el.textContent = str; lastNum = str; lastNumAt = now; }
+  }
+
+  const st = statusAt(p);
+  if (st !== lastStatus){ railStatus.textContent = st; lastStatus = st; }
+}
+
+/* ============================================================
+   4. ENVIRONMENT LAYER (optional, enhancement only)
+   ============================================================ */
+let ENV = null;
+if (!matchMedia('(prefers-reduced-motion:reduce)').matches){
+  import('./assets/env.js')
+    .then(m => { ENV = m.startEnvironment($('#env')); })
+    .catch(() => { $('#env').remove(); });
+}
+let envHold = null;   /* the hold interaction takes the wheel while it runs */
+function pushEnvTemp(v){ if (ENV) ENV.setTemp(envHold !== null ? envHold : v); }
+
+let lastCold = -1;
+function setCold(v, force){
+  if (!force && Math.abs(v - lastCold) < 0.008) return;
+  lastCold = v;
+  stage.style.setProperty('--cold', v.toFixed(3));
+}
+
+/* ============================================================
+   5. THE SCRUB DRIVE
+   ============================================================ */
+function heroProgress(){
+  const r = heroSec.getBoundingClientRect();
+  const range = heroSec.offsetHeight - innerHeight;
+  return range <= 0 ? 0 : clamp(-r.top / range, 0, 1);
+}
+
+let target = 0, shown = 0, rafId = null, lastTick = 0, heroOnScreen = true;
+
+function tick(now){
+  const dt = Math.min(100, now - (lastTick || now));
+  lastTick = now;
+
+  if (loadStart){
+    loadK = clamp((now - loadStart) / 900, 0, 1);
+  }
+
+  const k = 0.16;
+  shown += (target - shown) * (1 - Math.pow(1 - k, dt / 16.667));
+  const settled = Math.abs(target - shown) < 0.0005;
+  if (settled) shown = target;
+
+  requestSeek(shown * (video.duration || 0));
+  updateBands(shown);
+  updateRail(shown, now, settled);
+  pushEnvTemp(envTempAt(shown));
+  setCold(coldAt(shown), settled);
+
+  if (settled && loadK >= 1){ rafId = null; lastTick = 0; loadStart = 0; }
+  else rafId = requestAnimationFrame(tick);
+}
+
+function kick(){ if (rafId === null && heroOnScreen) rafId = requestAnimationFrame(tick); }
+function onScroll(){ target = heroProgress(); kick(); }
+
+/* ---------- seek gating, deadlock safe ---------- */
+let seekBusy = false, pendingTime = null;
+function requestSeek(t){
+  if (!video.duration || !isFinite(t)) return;
+  if (seekBusy){ pendingTime = t; return; }
+  seekBusy = true;
+  video.currentTime = t;
+}
+video.addEventListener('seeked', () => {
+  seekBusy = false;
+  if (pendingTime !== null){ const t = pendingTime; pendingTime = null; requestSeek(t); }
+});
+video.addEventListener('error', () => { seekBusy = false; pendingTime = null; failVideo(); });
+
+new IntersectionObserver(es => {
+  heroOnScreen = es[0].isIntersecting;
+  if (heroOnScreen) kick();
+}, { rootMargin: '10px' }).observe(heroSec);
+
+/* ============================================================
+   6. THE BLOB LOADER
+   ============================================================ */
+let heroInit = false;
+function initHeroOnce(){
+  if (heroInit) return;
+  heroInit = true;
+  poster.style.backgroundImage = `url('${POSTER_URL}')`;
+  let started = false;
+  const go = () => { if (started) return; started = true; loadHeroBlob().catch(failVideo); };
+  const img = new Image();
+  img.onload = go; img.onerror = go; img.src = POSTER_URL;
+  setTimeout(go, 4000);
+}
+
+async function loadHeroBlob(){
+  const ctrl = new AbortController();
+  let watchdog = setTimeout(() => ctrl.abort(), 20000);
+  const film = pickFilm();
+  const res = await fetch(film.url, { priority: 'low', signal: ctrl.signal });
+  if (!res.ok) throw new Error('video ' + res.status);
+  const total = Number(res.headers.get('Content-Length')) || film.bytes;
+  const reader = res.body.getReader();
+  const chunks = []; let got = 0, lastRing = 0;
+  for (;;){
+    const { done, value } = await reader.read();
+    if (done) break;
+    clearTimeout(watchdog);
+    watchdog = setTimeout(() => ctrl.abort(), 20000);
+    chunks.push(value); got += value.length;
+    const frac = Math.min(1, got / total), now = performance.now();
+    if (now - lastRing > 100 || frac === 1){
+      lastRing = now;
+      ring.style.setProperty('--ld', Math.round(126 * (1 - frac)));
+    }
+  }
+  clearTimeout(watchdog);
+  ring.style.setProperty('--ld', 0);
+  video.src = URL.createObjectURL(new Blob(chunks, { type: 'video/mp4' }));
+  video.load();
+  video.addEventListener('canplay', () => {
+    requestSeek(heroProgress() * video.duration);
+    stage.classList.add('video-ready');
+  }, { once: true });
+}
+
+function failVideo(){
+  if (ring.isConnected){
+    const cue = document.createElementNS('http://www.w3.org/2000/svg','svg');
+    cue.setAttribute('class','cue'); cue.setAttribute('viewBox','0 0 22 34');
+    cue.setAttribute('aria-hidden','true');
+    cue.innerHTML = '<rect x="1" y="1" width="20" height="32" rx="10" fill="none" stroke="currentColor"/><circle cx="11" cy="9" r="2" fill="currentColor"/>';
+    ring.replaceWith(cue);
+  }
+  stage.classList.add('video-failed');
+}
+
+/* ============================================================
+   7. THE FIVE GATES, LIVE IN BOTH DIRECTIONS
+   ============================================================ */
+/* Phones now get the film too, laid out as a band with the captions below it.
+   Only two cases still fall back to the still hero: a short landscape screen with
+   no room for band plus text, and anyone asking for reduced motion. These must
+   stay character for character identical to the CSS media query above. */
+const GATES = [
+  '(orientation: landscape) and (pointer: coarse) and (max-height: 560px)',
+  '(prefers-reduced-motion: reduce)'
+];
+let scrubOn = false;
+
+function enableScrub(){
+  if (scrubOn) return;
+  scrubOn = true;
+  loadStart = performance.now();
+  initHeroOnce();
+  addEventListener('scroll', onScroll, { passive: true });
+  addEventListener('resize', onScroll, { passive: true });
+  bands.forEach(b => { b.op = -1; b.k = -1; });
+  unpinFinalStates();
+  target = heroProgress();
+  updateBands(target);
+  updateRail(target, performance.now(), true);
+  setCold(coldAt(target), true);
+  onScroll();
+}
+function disableScrub(){
+  if (!scrubOn) return;
+  scrubOn = false;
+  removeEventListener('scroll', onScroll);
+  removeEventListener('resize', onScroll);
+  if (rafId !== null){ cancelAnimationFrame(rafId); rafId = null; }
+}
+function applyHeroMode(){
+  if (GATES.some(q => matchMedia(q).matches)) disableScrub();
+  else enableScrub();
+}
+const MQLS = GATES.map(q => matchMedia(q));
+MQLS.forEach(m => m.addEventListener('change', applyHeroMode));
+/* a rotate swaps the gauge's axis and the caption layout, so force a repaint
+   of both instead of leaving the head translated along the wrong axis */
+FLAT.addEventListener('change', () => {
+  lastMark = -1;
+  gaugeHead.style.transform = '';
+  gaugeFill.style.transform = '';
+  bands.forEach(b => { b.op = -1; b.k = -1; });
+  if (scrubOn){ target = heroProgress(); updateBands(target); updateRail(target, performance.now(), true); kick(); }
+});
+
+/* ============================================================
+   8. PAGE MOTION, ENTRANCES, DRAWN LINES
+   ============================================================ */
+const secObs = new IntersectionObserver(es => {
+  es.forEach(e => {
+    if (!e.isIntersecting) { e.target.classList.remove('in'); return; }
+    e.target.classList.add('in');
+    setTimeout(() => e.target.classList.add('done'), 1400);
+  });
+}, { threshold: 0.14 });
+document.querySelectorAll('.sec').forEach(s => secObs.observe(s));
+
+const drawObs = new IntersectionObserver(es => {
+  es.forEach(e => { if (e.isIntersecting){ e.target.classList.add('in'); drawObs.unobserve(e.target); } });
+}, { threshold: 0.3 });
+document.querySelectorAll('.fracture, .ladder').forEach(el => {
+  if (el.classList.contains('fracture')){
+    const p = el.querySelector('path');
+    const len = Math.ceil(p.getTotalLength());
+    el.style.setProperty('--len', len);
+  }
+  drawObs.observe(el);
+});
+
+document.addEventListener('visibilitychange', () => {
+  document.body.classList.toggle('paused', document.hidden);
+});
+
+/* ============================================================
+   9. THE FOUR SECOND HOLD
+   ============================================================ */
+(() => {
+  const dial = $('#dial'), btn = $('#dialbtn'), prg = $('#dialprg'), hld = $('#dialhld');
+  const tempEl = $('#dialtemp'), hintEl = $('#dialhint'), msg = $('#holdmsg');
+  const C_PRG = 302, C_HLD = 283;
+  /* Coming back is the point, so neither single action can do it. Letting go
+     rises too fast; pressing pushes her back down. Only alternating gets home,
+     which is the whole thesis of the page performed with one button. */
+  const DOWN_RATE = 1/2.2, UP_FREE = 1/1.7, RE_FREEZE = 1/12;
+  const HOLD_MS = 4000, MIN_RETURN_MS = 4000, MAX_RETURN_MS = 12000;
+
+  let phase = 'idle', t = 0, held = 0, pressed = false;
+  let returnStart = 0, raf = null, last = 0, lastTempStr = '';
+
+  const reduced = () => matchMedia('(prefers-reduced-motion:reduce)').matches;
+
+  function say(text, cls){
+    msg.textContent = text;
+    msg.className = 'hold-msg' + (cls ? ' ' + cls : '');
+  }
+  function paint(){
+    prg.style.strokeDashoffset = (C_PRG * (1 - t)).toFixed(1);
+    hld.style.strokeDashoffset = (C_HLD * (1 - held / HOLD_MS)).toFixed(1);
+    const val = T_START + (T_ZERO - T_START) * t;
+    const s = (t > 0.995 ? T_ZERO.toFixed(2) : val.toFixed(1)).replace('-', '−');
+    if (s !== lastTempStr){ tempEl.textContent = s; lastTempStr = s; }
+    dial.classList.toggle('zero', phase === 'holding');
+    dial.classList.toggle('active', pressed && phase !== 'done' && phase !== 'failed');
+    envHold = (phase === 'idle' && t < 0.01) ? null : t;
+  }
+
+  function loop(now){
+    const dt = Math.min(64, now - (last || now)); last = now;
+
+    if (phase === 'descend'){
+      t = pressed ? Math.min(1, t + dt/1000*DOWN_RATE) : Math.max(0, t - dt/1000*UP_FREE);
+      if (t >= 1){ phase = 'holding'; held = 0; say('Absolute zero. Hold it.'); }
+      else if (t <= 0 && !pressed){ phase = 'idle'; say(''); hintEl.textContent = 'Press and hold'; }
+    }
+    else if (phase === 'holding'){
+      if (!pressed){ fail('You let go too early.'); }
+      else {
+        held += dt;
+        if (held >= HOLD_MS){
+          phase = 'return'; returnStart = now;
+          say('Now come back. Slowly.');
+          hintEl.textContent = 'Ease it up';
+        }
+      }
+    }
+    else if (phase === 'return'){
+      t = pressed
+        ? Math.min(1, t + dt/1000*RE_FREEZE)
+        : Math.max(0, t - dt/1000*UP_FREE);
+      const took = now - returnStart;
+      if (t <= 0){
+        if (took < MIN_RETURN_MS) fail('Too fast. The cold does not let go on your terms.');
+        else succeed(took);
+      } else if (took > MAX_RETURN_MS){
+        fail('Holding on is not returning. You have to let it move.');
+      }
+    }
+
+    paint();
+    if (phase === 'idle' && t <= 0 && !pressed){ raf = null; last = 0; envHold = null; return; }
+    raf = requestAnimationFrame(loop);
+  }
+  function kickLoop(){ if (raf === null) raf = requestAnimationFrame(loop); }
+
+  function fail(text){
+    phase = 'failed'; t = 0; held = 0; pressed = false; envHold = null;
+    dial.classList.remove('zero','active','done');
+    dial.classList.add('fail');
+    say(text, 'bad');
+    hintEl.textContent = 'Try again';
+    paint();
+    raf = null; last = 0;
+    setTimeout(() => { if (phase === 'failed'){ phase = 'idle'; dial.classList.remove('fail'); } }, 240);
+  }
+  function succeed(took){
+    phase = 'done'; t = 0; held = 0; pressed = false; envHold = null;
+    dial.classList.remove('zero','active','fail');
+    dial.classList.add('done');
+    say(`You came back in ${(took/1000).toFixed(1)} seconds. She gets four.`, 'good');
+    hintEl.textContent = 'Again';
+    lastTempStr = ''; paint();
+    raf = null; last = 0;
+    setTimeout(() => { if (phase === 'done') phase = 'idle'; }, 400);
+  }
+
+  function down(e){
+    if (e.cancelable) e.preventDefault();
+    if (reduced()){ say('You came back slowly enough. She gets four seconds.', 'good'); return; }
+    pressed = true;
+    dial.classList.remove('fail','done');
+    if (phase === 'idle'){ phase = 'descend'; say('Falling.'); hintEl.textContent = 'Keep holding'; }
+    kickLoop();
+  }
+  function up(){ pressed = false; kickLoop(); }
+
+  btn.addEventListener('pointerdown', down);
+  addEventListener('pointerup', up);
+  addEventListener('pointercancel', up);
+  btn.addEventListener('keydown', e => {
+    if (e.key === ' ' || e.key === 'Enter'){ e.preventDefault(); if (!pressed) down(e); }
+  });
+  btn.addEventListener('keyup', e => { if (e.key === ' ' || e.key === 'Enter') up(); });
+  btn.addEventListener('contextmenu', e => e.preventDefault());
+  paint();
+})();
+
+/* ============================================================
+   10. REDUCED MOTION, LIVE, IN BOTH DIRECTIONS
+   ============================================================ */
+function pinToFinalStates(){
+  document.querySelectorAll('.sec').forEach(s => s.classList.add('in','done'));
+  document.querySelectorAll('.fracture, .ladder').forEach(el => el.classList.add('in'));
+  bands.forEach(b => { b.el.style.opacity = ''; b.el.style.removeProperty('--k'); });
+}
+function unpinFinalStates(){
+  document.querySelectorAll('.fracture, .ladder').forEach(el => el.classList.remove('in'));
+  document.querySelectorAll('.sec').forEach(s => s.classList.remove('done'));
+  drawObs.disconnect();
+  document.querySelectorAll('.fracture, .ladder').forEach(el => drawObs.observe(el));
+}
+matchMedia('(prefers-reduced-motion: reduce)').addEventListener('change', e => {
+  if (e.matches){ pinToFinalStates(); if (ENV) ENV.stop(); }
+  else { applyHeroMode(); if (ENV) ENV.start(); }
+});
+
+/* go */
+applyHeroMode();
+if (matchMedia('(prefers-reduced-motion: reduce)').matches) pinToFinalStates();
+</script>
+</body>
+</html>
